@@ -11,8 +11,8 @@ struct cls_tensor_activations convolution_2D(struct cls_tensor_activations input
     int output_depth = weights.num_filters;
     int size_output = output_height * output_width * output_depth;
 
-	float *output = (float *)malloc(size_output * sizeof(float));
-    memset(output , 0 , sizeof(float) * size_output);
+	char *output = (char *)malloc(size_output * sizeof(char));
+    memset(output , 0 , sizeof(char) * size_output);
 
 
     for(int k = 0 ; k < weights.num_filters; k ++){
@@ -66,10 +66,10 @@ struct cls_tensor_weights read_weights_from_file(char *filename , int kernal_hei
     weights.kernal_width = kernal_width;
     weights.kernal_depth = kernal_depth;
     weights.num_filters = num_filters;
-    weights.filters = (float *)malloc(weights.kernal_height * weights.kernal_width * weights.kernal_depth * weights.num_filters * sizeof(float));
+    weights.filters = (char *)malloc(weights.kernal_height * weights.kernal_width * weights.kernal_depth * weights.num_filters * sizeof(char));
 
     FILE *file = fopen(filename , "rb");
-    fread(weights.filters , sizeof(float) , weights.kernal_height * weights.kernal_width * weights.kernal_depth * weights.num_filters , file);
+    fread(weights.filters , sizeof(char) , weights.kernal_height * weights.kernal_width * weights.kernal_depth * weights.num_filters , file);
     fclose(file);
 
     return weights;
@@ -79,10 +79,10 @@ struct cls_tensor_biases read_biases_from_file(char *filename , int kernal_depth
     struct cls_tensor_biases biases;
 
     biases.kernal_depth = kernal_depth;
-    biases.biases = (float *)malloc(biases.kernal_depth * sizeof(float));
+    biases.biases = (char *)malloc(biases.kernal_depth * sizeof(char));
 
     FILE *file = fopen(filename , "rb");
-    fread(biases.biases , sizeof(float) , biases.kernal_depth , file);
+    fread(biases.biases , sizeof(char) , biases.kernal_depth , file);
     fclose(file);
 
     return biases;
@@ -94,10 +94,10 @@ struct cls_tensor_activations read_activations_from_file(char *filename , int he
     activations.height = height;
     activations.width = width;
     activations.depth = depth;
-    activations.feature_map = (float *)malloc(height * width * depth * sizeof(float));
+    activations.feature_map = (char *)malloc(height * width * depth * sizeof(char));
 
     FILE *file = fopen(filename , "rb");
-    fread(activations.feature_map , sizeof(float) , height * width * depth , file);
+    fread(activations.feature_map , sizeof(char) , height * width * depth , file);
     fclose(file);
 
     return activations;
