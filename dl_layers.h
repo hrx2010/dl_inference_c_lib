@@ -9,19 +9,19 @@
 struct cls_tensor_weights{
     int kernal_height, kernal_width, kernal_depth;
     int num_filters;
-    float *filters;
+    char *filters;
 };
 
 // define structure of biases
 struct cls_tensor_biases{
     int kernal_depth;
-    float *biases;
+    char *biases;
 };
 
 // define strcucture of activations
 struct cls_tensor_activations{
     int height, width, depth;
-    float *feature_map;
+    char *feature_map;
 };
 
 // compute tensor size after convolutional layer
