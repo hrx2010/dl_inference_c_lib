@@ -59,6 +59,36 @@ struct cls_tensor_activations convolution_2D(struct cls_tensor_activations input
     return activations;
 }
 
+struct cls_tensor_activations_1D convolution_1D_no_padding(struct cls_tensor_activations_1D input , struct cls_tensor_weights_1D weights){
+    struct cls_tensor_activations_1D outputs;
+
+    outputs.num_cols = compute_output_cols_convolution_1D(input.num_cols , weights.num_cols);
+    outputs.num_rows = weights.num_filters;
+
+    outputs.feature_map = (float **)malloc(outputs.num_rows * sizeof(float *));
+
+    for(int i = 0 ; i < outputs.num_rows ; i ++)
+        outputs.feature_map[i] = (float *)malloc(outputs.num_cols * sizeof(float));
+
+    for(int i = 0 ; i < outputs.num_rows ; i ++)
+        for(int j = 0 ; j < outputs.num_cols ; j ++)
+            outputs.feature_map[i][j] = 0.0;
+
+    for(int i = 0 ; i < weights.num_filters ; i ++){
+        for(int j = 0 ; j + weights.num_cols <= input.num_cols ; j ++){
+            outputs.feature_map[i][j] = 0.0;
+
+            for(int k = 0 ; k < weights.num_rows ; k ++){
+                for(int t = 0 ; t < weights.num_cols ; t ++){
+                    outputs.feature_map[i][j] += input.feature_map[k][j + t] * weights.filters[i][k][t];
+                }
+            }
+        }
+    }
+
+    return outputs;
+}
+
 struct cls_tensor_weights read_weights_from_file(char *filename , int kernal_height , int kernal_width , int kernal_depth , int num_filters){
     struct cls_tensor_weights weights;
 
@@ -116,4 +146,76 @@ float compute_mean_square_error(struct cls_tensor_activations output , struct cl
     error /= num_values;
 
     return error;
+}
+
+int compute_output_cols_convolution_1D(int num_input_col , int num_weight_col){
+    return num_input_col - num_weight_col + 1;
+}
+
+struct cls_tensor_weights_1D read_weights_1D_from_file(char *filename , int num_filters , int num_rows , int num_cols){
+    struct cls_tensor_weights_1D weights;
+
+    weights.num_filters = num_filters;
+    weights.num_rows = num_rows;
+    weights.num_cols = num_cols;
+
+    weights.filters = (float ***)malloc(num_filters * sizeof(float **));
+
+    for(int i = 0 ; i < num_filters ; i ++){
+        weights.filters[i] = (float **)malloc(num_rows * sizeof(float *));
+
+        for(int j = 0 ; j < num_rows ; j ++)
+            weights.filters[i][j] = (float *)malloc(num_cols * sizeof(float));
+    }
+
+    FILE *file = fopen(filename , "rb");
+
+    if(file == NULL){
+        printf("error: can not find file %s.\n" , filename);
+        exit(1);
+    }
+
+    float read_buffer[10];
+
+    for(int i = 0 ; i < num_filters ; i ++)
+        for(int j = 0 ; j < num_rows ; j ++)
+            for(int k = 0 ; k < num_cols ; k ++){
+                fread(read_buffer , sizeof(float) , 1 , file);
+                weights.filters[i][j][k] = read_buffer[0];
+            }
+
+    fclose(file);
+
+    return weights;
+}
+
+struct cls_tensor_activations_1D read_activations_1D_from_file(char *filename , int num_rows , int num_cols){
+    struct cls_tensor_activations_1D output;
+
+    output.num_rows = num_rows;
+    output.num_cols = num_cols;
+
+    output.feature_map = (float **)malloc(num_rows * sizeof(float *));
+
+    for(int i = 0 ; i < num_rows ; i ++)
+        output.feature_map[i] = (float *)malloc(num_cols * sizeof(float));
+
+    FILE *file = fopen(filename , "rb");
+
+    if(file == NULL){
+        printf("error: can not find file %s.\n" , filename);
+        exit(1);
+    }
+
+    float read_buffer[10];
+
+    for(int i = 0 ; i < num_rows ; i ++)
+        for(int j = 0 ; j < num_cols ; j ++){
+            fread(read_buffer , sizeof(float) , 1 , file);
+            output.feature_map[i][j] = read_buffer[0];
+        }
+
+    fclose(file);
+
+    return output;
 }
