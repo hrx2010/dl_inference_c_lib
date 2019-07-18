@@ -3,18 +3,17 @@
 
 int main(){
 
-    // load input from file
-    struct cls_tensor_activations input = read_activations_from_file("./testing_data/input.bin" , 224 , 224 , 3);
-    // load weights from file
-    struct cls_tensor_weights weights = read_weights_from_file("./testing_data/weights.bin" , 3 , 3 , 3 , 8);
-    // load bias from file
-    struct cls_tensor_biases biases = read_biases_from_file("./testing_data/biases.bin" , 8);
-    // compute 2D convolution results
-    struct cls_tensor_activations output = convolution_2D(input , weights , biases , 1 , 1);
-    // load ground truth from file
-    struct cls_tensor_activations output_ground_truth = read_activations_from_file("./testing_data/output.bin" , output.height , output.width , output.depth);
-    // test convolution 2D results
-    printf("mean square error is %f\n" , compute_mean_square_error(output , output_ground_truth));
+    struct cls_tensor_activations_1D input = read_activations_1D_from_file("../testing_data/input_1d.dat" , 9 , 128);
+
+    printf("read input data successfully!\n");
+
+    struct cls_tensor_weights_1D weights = read_weights_1D_from_file("../testing_data/weight_1d.dat" , 51 , 9 , 50);
+
+    printf("read weights data successfully!\n");
+
+    struct cls_tensor_activations_1D output =convolution_1D_no_padding(input , weights);
+
+    printf("perform 1D conv layer successfully!\n");
 
     return 0;
 }
