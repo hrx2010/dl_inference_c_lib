@@ -21,29 +21,35 @@ struct cls_tensor_activations_1D convolution_1D_no_padding(struct cls_tensor_act
                 }
             }
             accumulated_data += weights.bias[i];
-            accumulated_data = round(accumulated_data * pow(2, weights.shift));
+            accumulated_data = accumulated_data >> weights.shift;
+//            accumulated_data = round(accumulated_data * pow(2, weights.shift));
+//            accumulated_data = accumulated_data * pow(2, weights.shift);
+
+            if(accumulated_data > 127){
+                accumulated_data = 127;
+            }
+
             if (weights.wReLU) {
-                if(accumulated_data > 127){
-                    accumulated_data = 127;
-                }else if(accumulated_data <= 0){
+                if(accumulated_data <= 0){
                     accumulated_data = 0;
                 }
             }
-            outputs.feature_map[i][j] = (char) accumulated_data;
+
+            outputs.feature_map[i][j] = accumulated_data;
             accumulated_data = 0;
         }
     }
 
-//    //debug
-//    char fo[1000];
-//    sprintf(fo, "layer_%d_output.dat", weights.layer_index);
-//    FILE *of = fopen(fo, "w");
-//    for(int j = 0 ; j < outputs.num_cols ; j ++)
-//        for(int i = 0 ; i < outputs.num_rows ; i ++)
-//            fprintf(of, "%d,\n", outputs.feature_map[i][j]);
-//    fclose(of);
-//
-//    return outputs;
+    //debug
+    char fo[1000];
+    sprintf(fo, "layer_%d_output.dat", weights.layer_index);
+    FILE *of = fopen(fo, "w");
+    for(int j = 0 ; j < outputs.num_cols ; j ++)
+        for(int i = 0 ; i < outputs.num_rows ; i ++)
+            fprintf(of, "%d,\n", outputs.feature_map[i][j]);
+    fclose(of);
+
+    return outputs;
 }
 
 
@@ -68,6 +74,15 @@ struct cls_tensor_activations_1D read_activations_from_source_code(VALUE_TYPE *d
 
     return output;
 }
+
+void release_tensor_activations_1D(struct cls_tensor_activations_1D input) {
+    if (input.feature_map != NULL) {
+        for(int i = 0 ; i < input.num_rows ; i ++)
+            free(input.feature_map[i]);
+        free(input.feature_map);
+    }
+}
+
 
 struct cls_tensor_activations_1D flatten_activations(struct cls_tensor_activations_1D input){
     struct cls_tensor_activations_1D output;
@@ -116,3 +131,18 @@ struct cls_tensor_weights_1D read_weights_1D_from_source_code(int layer_idx, VAL
 
     return weights;
 }
+
+void release_tensor_weights_1D(struct cls_tensor_weights_1D weights) {
+    if (weights.bias != NULL)
+        free(weights.bias);
+
+    if (weights.filters != NULL) {
+        for(int i = 0 ; i < weights.num_filters ; i ++){
+            for(int j = 0 ; j < weights.num_rows ; j ++)
+                free(weights.filters[i][j]);
+            free(weights.filters[i]);
+        }
+        free(weights.filters);
+    }
+}
+

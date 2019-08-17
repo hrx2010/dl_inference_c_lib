@@ -33,4 +33,8 @@ struct cls_tensor_activations_1D flatten_activations(struct cls_tensor_activatio
 
 struct cls_tensor_weights_1D read_weights_1D_from_source_code(int layer_idx, VALUE_TYPE *data , int *bias, int num_filters , int num_rows , int num_cols, int shift, bool wReLU);
 
+void release_tensor_weights_1D(struct cls_tensor_weights_1D weights);
+
+void release_tensor_activations_1D(struct cls_tensor_activations_1D input);
+
 #endif // DL_LAYERS_H_INCLUDED
