@@ -40,14 +40,14 @@ struct cls_tensor_activations_1D convolution_1D_no_padding(struct cls_tensor_act
         }
     }
 
-    //debug
-    char fo[1000];
-    sprintf(fo, "layer_%d_output.dat", weights.layer_index);
-    FILE *of = fopen(fo, "w");
-    for(int j = 0 ; j < outputs.num_cols ; j ++)
-        for(int i = 0 ; i < outputs.num_rows ; i ++)
-            fprintf(of, "%d,\n", outputs.feature_map[i][j]);
-    fclose(of);
+//    //debug
+//    char fo[1000];
+//    sprintf(fo, "layer_%d_output.dat", weights.layer_index);
+//    FILE *of = fopen(fo, "w");
+//    for(int j = 0 ; j < outputs.num_cols ; j ++)
+//        for(int i = 0 ; i < outputs.num_rows ; i ++)
+//            fprintf(of, "%d,\n", outputs.feature_map[i][j]);
+//    fclose(of);
 
     return outputs;
 }
@@ -146,3 +146,42 @@ void release_tensor_weights_1D(struct cls_tensor_weights_1D weights) {
     }
 }
 
+int arg_max(struct cls_tensor_activations_1D final_out, int numOut) {
+  int max, index;
+  index = 0;
+  max = final_out.feature_map[0][0];
+
+  for (int c = 1; c < numOut; c++) {
+    if (final_out.feature_map[c][0] > max) {
+       index = c;
+       max = final_out.feature_map[c][0];
+    }
+  }
+
+  return index;
+}
+
+VALUE_TYPE* read_values_from_file(char *filename , int number){
+	if(filename == "" || filename == "NULL"){
+		return 0;
+	}
+
+	FILE *file_io = fopen(filename, "rb");
+	if(file_io == NULL){
+		exit(1);
+	}
+	VALUE_TYPE* inputs_data = (VALUE_TYPE *) malloc(number * sizeof(VALUE_TYPE));
+	size_t result = fread(inputs_data , sizeof(VALUE_TYPE) , number , file_io);
+	if(result != number){
+		exit(1);
+	}
+	fclose(file_io);
+
+//    //debug
+//    FILE *of = fopen("input.dat", "w");
+//    for(int j = 0 ; j < number ; j ++)
+//        fprintf(of, "%d,\n", inputs_data[j]);
+//    fclose(of);
+
+	return inputs_data;
+}
