@@ -161,27 +161,27 @@ int arg_max(struct cls_tensor_activations_1D final_out, int numOut) {
   return index;
 }
 
-VALUE_TYPE* read_values_from_file(char *filename , int number){
-	if(filename == "" || filename == "NULL"){
-		return 0;
-	}
-
-	FILE *file_io = fopen(filename, "rb");
-	if(file_io == NULL){
-		exit(1);
-	}
-	VALUE_TYPE* inputs_data = (VALUE_TYPE *) malloc(number * sizeof(VALUE_TYPE));
-	size_t result = fread(inputs_data , sizeof(VALUE_TYPE) , number , file_io);
-	if(result != number){
-		exit(1);
-	}
-	fclose(file_io);
-
-//    //debug
-//    FILE *of = fopen("input.dat", "w");
-//    for(int j = 0 ; j < number ; j ++)
-//        fprintf(of, "%d,\n", inputs_data[j]);
-//    fclose(of);
-
-	return inputs_data;
-}
+//VALUE_TYPE* read_values_from_file(char *filename , int number){
+//	if(filename == "" || filename == "NULL"){
+//		return 0;
+//	}
+//
+//	FILE *file_io = fopen(filename, "rb");
+//	if(file_io == NULL){
+//		exit(1);
+//	}
+//	VALUE_TYPE* inputs_data = (VALUE_TYPE *) malloc(number * sizeof(VALUE_TYPE));
+//	size_t result = fread(inputs_data , sizeof(VALUE_TYPE) , number , file_io);
+//	if(result != number){
+//		exit(1);
+//	}
+//	fclose(file_io);
+//
+////    //debug
+////    FILE *of = fopen("input.dat", "w");
+////    for(int j = 0 ; j < number ; j ++)
+////        fprintf(of, "%d,\n", inputs_data[j]);
+////    fclose(of);
+//
+//	return inputs_data;
+//}

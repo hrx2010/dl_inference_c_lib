@@ -39,6 +39,6 @@ void release_tensor_activations_1D(struct cls_tensor_activations_1D input);
 
 int arg_max(struct cls_tensor_activations_1D final_out, int numOut);
 
-VALUE_TYPE* read_values_from_file(char *filename , int number);
+//VALUE_TYPE* read_values_from_file(char *filename , int number);
 
 #endif // DL_LAYERS_H_INCLUDED
